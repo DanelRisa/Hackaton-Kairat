@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Game</title>
+    <style>
+    #game-container {
+      width: 800px;
+      height: 600px; /* Уменьшили высоту контейнера */
+      border: 1px solid black;
+      position: relative;
+      overflow: hidden;
+    }
+    img{
+        width: 100px;
+        height: 100px;
+    }
+
+    img.arrow {
+      position: absolute;
+      top: -100px;
+      left: 375px;
+      transition: top 1s linear; /* Изменили на линейную функцию для плавного спуска */
+    }
+
+    #score-container {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 20px;
+    }
+
+    .missed {
+      color: red;
+    }
+
+    .time-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--time-bar-height, 10px);
+      background-color: green;
+      transition: width var(--arrow-interval, 2000ms);
+    }
+
+    .time-bar-progress {
+      height: 100%;
+      width: var(--time-bar-progress, 0%);
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="score-container">Score: <span id="score">0</span></div>
+    <div class="time-bar">
+      <div class="time-bar-progress"></div>
+    </div>
+  </div>
+
+  <script>
+    var gameContainer = document.getElementById('game-container');
+    var scoreElement = document.getElementById('score');
+    var score = 0;
+    var arrows = ['up', 'down', 'left', 'right'];
+    var arrowSpeed = 300; /* Увеличили скорость спуска стрелок */
+    var arrowInterval = 2000;
+    var timeBarHeight = 10;
+    var timeBarProgress = 0;
+    var timerInterval = 10;
+
+    setInterval(generateArrow, arrowInterval);
+    setInterval(updateTimeBar, timerInterval);
+
+    function generateArrow() {
+      var randomArrow = arrows[Math.floor(Math.random() * arrows.length)];
+      var arrowImage = document.createElement('img');
+      arrowImage.src = randomArrow + '.png';
+      arrowImage.className = 'arrow';
+      arrowImage.setAttribute('data-direction', randomArrow);
+      gameContainer.appendChild(arrowImage);
+
+      setTimeout(function() {
+        arrowImage.style.top = (gameContainer.offsetHeight - arrowImage.offsetHeight) + 'px'; /* Изменяем положение стрелки */
+        checkMissedArrow(arrowImage);
+      }, 0); // Убираем задержку
+
+      setTimeout(function() {
+        arrowImage.remove();
+      }, (gameContainer.offsetHeight / arrowSpeed) * 1000);
+    }
+
+    function updateTimeBar() {
+      timeBarProgress += timerInterval / arrowInterval * 100;
+      document.body.style.setProperty('--time-bar-progress', timeBarProgress + '%');
+      if (timeBarProgress >= 100) {
+        timeBarProgress = 0;
+        checkMissedArrow(null);
+      }
+    }
+
+    function checkMissedArrow(arrowImage) {
+      if (arrowImage && !arrowImage.classList.contains('missed')) {
+        arrowImage.classList.add('missed');
+        score--;
+      }
+
+      updateScore();
+    }
+
+    document.addEventListener('keydown', function(event) {
+      var pressedArrow = event.key.replace('Arrow', '').toLowerCase();
+      var arrowImage = document.querySelector('.arrow[data-direction="' + pressedArrow + '"]');
+
+      if (arrowImage) {
+        arrowImage.remove();
+        score++;
+        updateScore();
+      }
+    });
+
+    function updateScore() {
+      scoreElement.innerText = score;
+    }
+  </script>
+</body>
+</html>
