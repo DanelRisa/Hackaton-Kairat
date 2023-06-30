@@ -44,6 +44,7 @@
       width: 100px;
       height: 100px;
     }
+    
 
     #score-container {
       text-align: center;
@@ -121,10 +122,39 @@
   } else {
     score -= mistakePenalty;
     updateScore();
-    mistakeMusic.currentTime = 0; // отморозок черт
+    mistakeMusic.currentTime = 0; // Сбросить текущую позицию аудио в начало
     mistakeMusic.play();
+
+    var randomImage = document.createElement('img');
+    randomImage.src = getRandomImage(); // Функция getRandomImage() должна возвращать случайный путь к изображению
+    randomImage.classList.add('random-image');
+    gameContainer.appendChild(randomImage);
+
+    randomImage.style.width = '200px';
+    randomImage.style.height = '200px';
+
+    var randomLeft = Math.random() * (window.innerWidth - randomImage.offsetWidth);
+    var randomTop = Math.random() * (window.innerHeight - randomImage.offsetHeight);
+    
+    // Установить позицию фотографии
+    randomImage.style.position = 'absolute';
+    randomImage.style.left = randomLeft + 'px';
+    randomImage.style.top = randomTop + 'px';
+
+    setTimeout(function () {
+      randomImage.remove();
+    }, 2000); // Измените время появления/исчезновения фотографии по вашему желанию
   }
 });
+
+function getRandomImage() {
+  // Возвращает случайный путь к изображению
+  // Здесь вы можете использовать свой собственный код для получения случайного пути к изображению или выбрать его из предопределенного списка
+  // Например:
+  var images = ['tomato.jpg'];
+  var randomIndex = Math.floor(Math.random() * images.length);
+  return images[randomIndex];
+}
 
 
 
@@ -176,14 +206,12 @@
     backgroundMusic.play();
   </script>
 
-  <audio id="background-music" autoplay loop controls style="">
+  <audio id="background-music" autoplay loop controls style="display: none;">
     <source src="kn.mp3" type="audio/mpeg">
-    Your browser does not support audio playback.
   </audio>
 
   <audio id="mistake-music" controls style="display: none;">
     <source src="otmorozok.mp3" type="audio/mpeg">
-    Your browser does not support audio playback.
   </audio>
 
 </body>
